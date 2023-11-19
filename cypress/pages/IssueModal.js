@@ -6,8 +6,10 @@ class IssueModal {
         this.title = 'input[name="title"]';
         this.issueType = '[data-testid="select:type"]';
         this.descriptionField = '.ql-editor';
+        this.reporter = '[data-testid="select:reporterId"]';
         this.assignee = '[data-testid="select:userIds"]';
         this.backlogList = '[data-testid="board-list:backlog"]';
+        this.priority = '[data-testid="select:priority"]';
         this.issuesList = '[data-testid="list-issue"]';
         this.deleteButton = '[data-testid="icon:trash"]';
         this.deleteButtonName = "Delete issue";
@@ -34,6 +36,16 @@ class IssueModal {
     selectAssignee(assigneeName) {
         cy.get(this.assignee).click('bottomRight');
         cy.get(`[data-testid="select-option:${assigneeName}"]`).click();
+    }
+
+    selectReporter(reporterName) {
+        cy.get(this.reporter).click('bottomRight');
+        cy.get(`[data-testid="select-option:${reporterName}"]`).click();
+    }
+
+    selectPrority(priorityName) {
+        cy.get(this.priority).click('bottomRight');
+        cy.get(`[data-testid="select-option:${priorityName}"]`).click();
     }
 
     editTitle(title) {
