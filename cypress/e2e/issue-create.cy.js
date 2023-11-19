@@ -9,7 +9,7 @@ describe('Issue create', () => {
     });
   });
 
-  it('Should create an issue and validate it successfully', () => {
+  it.only('Should create an issue and validate it successfully', () => {
     //System finds modal for creating issue and does next steps inside of it
     cy.get('[data-testid="modal:issue-create"]').within(() => {
       
@@ -25,9 +25,13 @@ describe('Issue create', () => {
       //Order of filling in the fields is first description, then title on purpose
       //Otherwise filling title first sometimes doesn't work due to web page implementation
       cy.get('input[name="title"]').type('TEST_TITLE');
+
+      //Clearing dropdown
+      cy.get('[data-testid="select:reporterId"]').click();
+      cy.get('[data-testid="icon:close"]').click();
       
       //Select Lord Gaben from reporter dropdown
-      cy.get('[data-testid="select:userIds"]').click();
+      cy.get('[data-testid="select:reporterId"]').click();
       cy.get('[data-testid="select-option:Lord Gaben"]').click();
 
       //Click on button "Create issue"
@@ -123,7 +127,7 @@ describe('Issue create', () => {
 
 
 
-  it.onlygit('Should create another issue with random data and validate it successfully', () => {
+  it('Should create another issue with random data and validate it successfully', () => {
     let title_faker = faker.word.sample();
     let descr_faker = faker.word.words(5);
     //System finds modal for creating issue and does next steps inside of it
