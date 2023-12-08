@@ -1,4 +1,6 @@
 import { faker } from '@faker-js/faker';
+const title = ' Hello  world!'
+const trimmedTitle = title.trim()
 
 describe('Issue create', () => {
   beforeEach(() => {
@@ -8,6 +10,15 @@ describe('Issue create', () => {
     cy.visit(url + '/board?modal-issue-create=true');
     });
   });
+
+// Bonus nr3
+  it.only('Should create an issue and remove unnecessary spaces on the board view. ', () => {
+
+    letsCreateNewIssue(title)
+    checkTitle(trimmedTitle)
+
+  });
+
 
   it('Should create an issue and validate it successfully', () => {
     //System finds modal for creating issue and does next steps inside of it
@@ -48,7 +59,7 @@ describe('Issue create', () => {
     cy.contains('Issue has been successfully created.').should('not.exist');
 
     //Assert than only one list with name Backlog is visible and do steps inside of it
-    cy.get('[data-testid="board-list:backlog').should('be.visible').and('have.length', '1').within(() => {
+    cy.get('[data-testid="board-list:backlog"]').should('be.visible').and('have.length', '1').within(() => {
       //Assert that this list contains 5 issues and first element with tag p has specified text
       cy.get('[data-testid="list-issue"]')
           .should('have.length', '5')
@@ -176,3 +187,31 @@ describe('Issue create', () => {
     });
   });
 });
+
+function letsCreateNewIssue(title) {
+  cy.get('[data-testid="select:type"]').click();
+  cy.get('[data-testid="select-option:Story"]')
+    .trigger('click');
+  cy.get('.ql-editor').type('TEST_DESCRIPTION');
+  cy.get('input[name="title"]').type(title);
+  cy.get('[data-testid="select:reporterId"]').click();
+  cy.get('[data-testid="icon:close"]').click();
+  cy.get('[data-testid="select:reporterId"]').click();
+  cy.get('[data-testid="select-option:Lord Gaben"]').click();
+  cy.get('button[type="submit"]').click();  
+  cy.get('[data-testid="modal:issue-create"]').should('not.exist');
+  cy.contains('Issue has been successfully created.').should('be.visible');
+  cy.reload();
+  cy.contains('Issue has been successfully created.').should('not.exist');
+} 
+
+function checkTitle(trimmedTitle) {
+  cy.get('[data-testid="modal:issue-create"]').should("not.exist");
+  cy.reload();
+  cy.contains("Issue has been successfully created.").should("not.exist");
+  cy.get('[data-testid="board-list:backlog').should('be.visible').and('have.length', '1').within(() => {
+      cy.get('[data-testid="list-issue"]')
+      .first()
+      .and('contain', trimmedTitle)
+  });
+}

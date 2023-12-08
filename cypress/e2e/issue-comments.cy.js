@@ -1,18 +1,14 @@
-describe('Issue comments creating, editing and deleting', () => {
-    beforeEach(() => {
-        cy.visit('/');
-        cy.url().should('eq', `${Cypress.env('baseUrl')}project/board`).then((url) => {
-            cy.visit(url + '/board');
-            cy.contains('This is an issue of type: Task.').click();
-        });
-    });
+const getIssueDetailsModal = () => cy.get('[data-testid="modal:issue-details"]');
+const comment = 'TEST_COMMENT';
+const new_comment = 'edited_comment'
 
-    const getIssueDetailsModal = () => cy.get('[data-testid="modal:issue-details"]');
+describe('Issue comments creating, editing and deleting', () => {
+    visitBoardAndOpenSpecificIssue()
+
 
     it('Should create a comment successfully', () => {
-        const comment = 'TEST_COMMENT';
 
-        getIssueDetailsModal().within(() => {
+        getIssueDetailsModal()
             cy.contains('Add a comment...')
                 .click();
 
@@ -24,14 +20,8 @@ describe('Issue comments creating, editing and deleting', () => {
 
             cy.contains('Add a comment...').should('exist');
             cy.get('[data-testid="issue-comment"]').should('contain', comment);
-        });
-    });
 
-    it('Should edit a comment successfully', () => {
-        const previousComment = 'An old silent pond...';
-        const comment = 'TEST_COMMENT_EDITED';
 
-        getIssueDetailsModal().within(() => {
             cy.get('[data-testid="issue-comment"]')
                 .first()
                 .contains('Edit')
@@ -39,9 +29,9 @@ describe('Issue comments creating, editing and deleting', () => {
                 .should('not.exist');
 
             cy.get('textarea[placeholder="Add a comment..."]')
-                .should('contain', previousComment)
+                .should('contain', comment)
                 .clear()
-                .type(comment);
+                .type(new_comment);
 
             cy.contains('button', 'Save')
                 .click()
@@ -49,23 +39,32 @@ describe('Issue comments creating, editing and deleting', () => {
 
             cy.get('[data-testid="issue-comment"]')
                 .should('contain', 'Edit')
-                .and('contain', comment);
+                .and('contain', new_comment);
+
+            cy.get('[data-testid="issue-comment"]')
+                .first()
+                .contains('Delete')
+                .click()
+
+            cy.get('[data-testid="modal:confirm"]').should('be.visible')+
+            ('have.text', "Are you sure you want to delete this comment? Once you delete, it's gone for good.");
+            cy.get('[data-testid="modal:confirm"]')    
+                .contains('button', 'Delete comment')
+                .click()
+                .should('not.exist');
+    
+            getIssueDetailsModal()
+                .find('[data-testid="issue-comment"]')
+                .should('not.contain', new_comment);           
+    });   
+});
+
+function visitBoardAndOpenSpecificIssue() {
+    beforeEach(() => {
+        cy.visit('/');
+        cy.url().should('eq', `${Cypress.env('baseUrl')}project/board`).then((url) => {
+            cy.visit(url + '/board');
+            cy.contains('This is an issue of type: Task.').click();
         });
     });
-
-    it('Should delete a comment successfully', () => {
-        getIssueDetailsModal()
-            .find('[data-testid="issue-comment"]')
-            .contains('Delete')
-            .click();
-
-        cy.get('[data-testid="modal:confirm"]')
-            .contains('button', 'Delete comment')
-            .click()
-            .should('not.exist');
-
-        getIssueDetailsModal()
-            .find('[data-testid="issue-comment"]')
-            .should('not.exist');
-    });
-});
+}

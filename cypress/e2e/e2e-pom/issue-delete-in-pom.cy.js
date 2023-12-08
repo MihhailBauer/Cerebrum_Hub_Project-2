@@ -2,15 +2,11 @@
  * This is an example file and approach for POM in Cypress
  */
 import IssueModal from "../../pages/IssueModal";
+//issue title, that we are testing with, saved into variable
 const issueTitle = 'This is an issue of type: Task.';
 
 describe('Issue delete', () => {
-
   beforeEveryTest()
-
-
-  //issue title, that we are testing with, saved into variable
-  
 
   it('Should delete issue successfully', () => {
     //add steps to delete issue
@@ -39,6 +35,4 @@ function beforeEveryTest() {
     cy.contains(issueTitle).click();
     });
   });
-
-
 }

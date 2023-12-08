@@ -7,6 +7,46 @@ describe('Issue details editing', () => {
     });
   });
 
+
+// Bonus nr2
+  it.only('Checking that the reporter name has only characters in it', () => {
+
+    getIssueDetailsModal().within(() => {
+      cy.get('[data-testid="select:reporter"]')
+        .invoke('text').should('match', /^[A-Za-z\s]*$/)
+    });
+  });
+
+  it('should validate priority dropdown values', () => {
+    const priorities = ['Highest', 'High', 'Medium', 'Low', 'Lowest']
+    const expectedLength = 4;
+    let prioritiesArray = [];
+
+    // Get the currently selected priority value
+    const selectedPriorityValue = () => cy.get('[data-testid="select:priority"]').text('High');
+    prioritiesArray.push(selectedPriorityValue);
+
+    // Open the priority dropdown
+    cy.get('[data-testid="select:priority"]').click();
+
+    // Get all priority option elements
+    const priorityOptions = cy.get('[data-testid="select:priority"]');
+
+    // Loop through all priority options and add them to the array
+    priorityOptions.each(($element) => {
+      const priorityValue = $element.text();
+      prioritiesArray.push(priorityValue);
+
+      cy.log(`Added priority: ${priorityValue}, array length: ${prioritiesArray.length}`);
+    });
+
+    // Assert that the array length matches the expected length
+    cy.assertEqual(prioritiesArray.length, expectedLength);
+
+    // Close the priority dropdown
+    cy.get('body').click();
+  });
+
   it('Should update type, status, assignees, reporter, priority successfully', () => {
     getIssueDetailsModal().within(() => {
       cy.get('[data-testid="select:type"]').click('bottomRight');
